@@ -1,0 +1,9 @@
+{
+  "name": "danmakuserver",
+  "version": "0.0.0",
+  "description": "danmakuserver",
+  "main": "testserver.js",
+  "author": {
+    "name": "exonu"
+  }
+}
