@@ -58,6 +58,7 @@ class Danmakus extends React.Component {
         for (var i = 0; i < 5; i++) {
             this.state.locks[i] = false;
         }
+        this.socket = {};
     }
     shouldComponentUpdate(nextProps, nextState) {
         if (!this.renderFlag) {
@@ -70,8 +71,8 @@ class Danmakus extends React.Component {
             return true;
     }
     componentDidMount() {
-        var socket = new WebSocket('ws://127.0.0.1:12000');
-        socket.onmessage = (e) => {
+        this.socket = new WebSocket('ws://127.0.0.1:12000');
+        this.socket.onmessage = (e) => {
             this.msgQueue.push(e.data);
             this.renderedFlags.push(false);
             for (var lock of this.state.locks) {
@@ -125,13 +126,13 @@ class Danmakus extends React.Component {
             }
         }, this);
         return (
-                <div id='example'>
-                    { itemList}
-                </div>);
+        <div id='example'>
+            { itemList}
+            <SendDanmaku socket={this.socket} />
+        </div>);
     }
 }
 ReactDOM.render(
     <div className='example'>
     <Danmakus />
-    <SendDanmaku />
     </div>, document.getElementById('example1'))
