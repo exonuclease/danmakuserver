@@ -1,36 +1,40 @@
 ﻿var React = require('react');
 var ReactDOM = require('react-dom');
-var CSSTransitionGroup = require('react-addons-css-transition-group');
+var immutable = require('immutable');
 class Danmaku extends React.Component {
     constructor(props) {
         super(props);
         this.duration = 0;
+        this.lockIndex = 0;
+    }
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!nextProps.lockIndex && nextProps.msg)
+        return false;
     }
     getBytesLength(str) {
         return str.replace(/[^\x00-\xff]/g, 'xx').length;
     }
     componentWillMount() {
-        this.duration = (8 * this.getBytesLength((this.props.msg)) + window.innerWidth) / 150;
+        this.duration = (8 * this.getBytesLength((this.props.msg)) + window.innerWidth) / 0.15;
     }
     componentDidMount() {
+        this.lockIndex = this.props.lockIndex;
         var time = Math.floor((8 * this.getBytesLength(this.props.msg)) / 0.15 + 200);
-        if (this.props.lock) {
-            this.props.lock(this.props.lockIndex);
-            setTimeout(() => {
-                this.props.releaseLock(this.props.lockIndex);
-            }, time)
-            setTimeout(() => {
-                this.props.removeMsg(this.props.index);
-            }, this.duration * 1000 + 200)
-        }
+        this.props.lock(this.props.lockIndex);
+        setTimeout(() => {
+            this.props.releaseLock(this.lockIndex);
+        }, time)
+        setTimeout(() => {
+            this.props.removeMsg(this.props.index);
+        }, this.duration)
     }
     render() {
-        return <span className='danmaku' key={0} style={{ 'top': this.props.lockIndex * 20 + '%', 'animation': `move ${this.duration}s linear`, } }><pre>{this.props.msg}</pre></span>
+        return <span className='danmaku' key={0} style={{ 'top': this.props.lockIndex * 20 + '%', 'animation': `move ${this.duration}ms linear`, } }><pre>{this.props.msg}</pre></span>
     }
 }
 class SendDanmaku extends React.Component {
     render() {
-        return <input type="text" onChange={this.handlechange} onKeyPress={this.handlekeypress} />
+        return <input className="senddanmaku" type="text" onChange={this.handlechange} onKeyPress={this.handlekeypress} />
     }
     constructor(props) {
         super(props);
@@ -48,88 +52,65 @@ class SendDanmaku extends React.Component {
 class Danmakus extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { locks: [], }
+        this.state = { msgQueue: [], locks: [], }
         this.counter = 0;
-        this.locks = [];
-        this.msgQueue = [];
-        this.renderedFlags = [];
-        this.lockIndexs = [];
         this.renderFlag = true;
+        this.renderedIndex = -1;
         for (var i = 0; i < 5; i++) {
             this.state.locks[i] = false;
         }
-        this.socket = {};
-    }
-    shouldComponentUpdate(nextProps, nextState) {
-        if (!this.renderFlag) {
-            return false;
-        }
-        if (this.renderedFlags[this.renderedFlags.length - 1] !== false) {
-            return false;
-        }
-        else
-            return true;
+        this.lock = this.lock.bind(this);
+        this.releaseLock = this.releaseLock.bind(this);
+        this.removeMsg = this.removeMsg.bind(this);
     }
     componentDidMount() {
-        this.socket = new WebSocket('ws://127.0.0.1:12000');
-        this.socket.onmessage = (e) => {
-            this.msgQueue.push(e.data);
-            this.renderedFlags.push(false);
-            for (var lock of this.state.locks) {
-                if (!lock) {
-                    this.forceUpdate();
-                    break;
-                }
-            }
-
+        var socket = new WebSocket('ws://127.0.0.1:12000');
+        socket.onmessage = (e) => {
+            this.setState({ msgQueue: this.state.msgQueue.concat(e.data) });
         }
     }
-    componentWillMount() {
-        this.removeMsg = this.removeMsg.bind(this);
-        this.releaseLock = this.releaseLock.bind(this);
-        this.lock = this.lock.bind(this);
-    }
     releaseLock(index) {
-        this.renderFlag = true;
+        //this.renderFlag = true;
         var tempLocks = this.state.locks.concat();
         tempLocks[index] = false;
         this.setState({ locks: tempLocks });
     }
     lock(index) {
-        this.renderFlag = false;
+        //this.renderFlag = false;
         var tempLocks = this.state.locks.concat();
         tempLocks[index] = true;
         this.setState({ locks: tempLocks });
     }
-    removeMsg(index) {
-        delete this.msgQueue[index];
-        delete this.renderedFlags[index];
-        this.forceUpdate();
+    removeMsg(index) {   
+        var tempQueue = this.state.msgQueue.concat();
+        delete tempQueue[index];
+        this.setState({ msgQueue: tempQueue });
     }
     render() {
         var itemList = [];
-        var locks = [];
-        this.msgQueue.map((msg, i) => {
-            if (this.renderedFlags[i] === true) {
-                itemList.push(<Danmaku msg={msg} removeMsg={this.removeMsg} releaseLock={this.releaseLock} lockIndex={this.lockIndexs[i]} key={i} index={i } />);
-            }
-            else if (this.renderedFlags[i] === false) {
-                for (var j in this.state.locks) {
-                    if (!this.state.locks[j] && locks.indexOf(j) === -1) {
-                        locks.push(j);
-                        this.renderedFlags[i] = true;
-                        this.lockIndexs.push(j);
-                        itemList.push(<Danmaku msg={msg} removeMsg={this.removeMsg} lock={this.lock} releaseLock={this.releaseLock} lockIndex={j} key={i} index={i } />);
-                        break;
+        var locks = this.state.locks;
+        this.state.msgQueue.map((msg, i) => {
+            if (msg) {
+                if (i > this.renderedIndex) {
+                    for (var j in locks) {
+                        if (!locks[j]) {
+                            locks[j] =true;
+                            this.renderedIndex = i;
+                            itemList.push(<Danmaku msg={msg} removeMsg={this.removeMsg} lock={this.lock} releaseLock={this.releaseLock} lockIndex={j} key={i} index={i } />);
+                            break;
+                        }
                     }
+                }
+                else {
+                    itemList.push(<Danmaku msg={msg} removeMsg={this.removeMsg} releaseLock={this.releaseLock} key={i} index={i } />);
                 }
             }
         }, this);
         return (
-        <div id='example'>
-            { itemList}
-            <SendDanmaku socket={this.socket} />
-        </div>);
+                    <div id='example'>
+                        { itemList}
+                        <SendDanmaku socket={this.socket} />
+                    </div>);
     }
 }
 ReactDOM.render(

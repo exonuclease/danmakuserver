@@ -7,22 +7,31 @@ pre {
 }
 
 #example {
+    position:relative;
     height: 600px;
     overflow: hidden;
 }
 
 .danmaku {
-    display: inline-block;
-    position: relative;
+    position: absolute;
     white-space: nowrap;
+    left: 0%;
 }
+
 @keyframes move {
     from {
         left: 100%;
-        transform: translate(0);
+        transform: translateX(0);
     }
+
     to {
         left: 0%;
-        transform: translate(-100%);
+        transform: translateX(-587px);
     }
+}
+
+.senddanmaku {
+    position: absolute;
+    left:0;
+    bottom: 0;
 }
