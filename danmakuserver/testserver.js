@@ -20,10 +20,11 @@ wss.on('connection', function (ws) {
     var counter = 0;
     var timer = setInterval(() =>{
         counter++;
-        if (counter >20) {
+        if (counter >30) {
             clearInterval(timer);
         }
-        ws.send('弹幕弹幕弹幕弹幕弹幕弹幕弹幕弹幕弹幕弹幕弹幕弹幕弹幕弹幕弹幕弹幕弹幕弹幕' + counter);
-    },20)
+        msg = new Array(Math.round(Math.random() * 30)).join('弹幕');
+        ws.send(msg + counter);
+    },200)
     console.log('connected');
 })

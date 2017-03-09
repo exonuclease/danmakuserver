@@ -11,7 +11,7 @@ class Danmaku extends React.Component {
     }
     shouldComponentUpdate(nextProps, nextState) {
         if (!nextProps.lockIndex && nextProps.msg)
-        return false;
+            return false;
     }
     getBytesLength(str) {
         return str.replace(/[^\x00-\xff]/g, 'xx').length;
@@ -51,11 +51,11 @@ class SendDanmaku extends React.Component {
 class Danmakus extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { msgQueue: [], locks: [], }
+        this.state = { msgQueue: immutable.List(), locks: immutable.List(), }
         this.counter = 0;
         this.renderedIndex = -1;
         for (var i = 0; i < 5; i++) {
-            this.state.locks[i] = false;
+            this.state.locks = this.state.locks.set(i, false);
         }
         this.lock = this.lock.bind(this);
         this.releaseLock = this.releaseLock.bind(this);
@@ -64,33 +64,27 @@ class Danmakus extends React.Component {
     componentDidMount() {
         var socket = new WebSocket('ws://127.0.0.1:12000');
         socket.onmessage = (e) => {
-            this.setState({ msgQueue: this.state.msgQueue.concat(e.data) });
+            this.setState({ msgQueue: this.state.msgQueue.push(e.data) });
         }
     }
     releaseLock(index) {
-        var tempLocks = this.state.locks.concat();
-        tempLocks[index] = false;
-        this.setState({ locks: tempLocks });
+        this.setState({ locks: this.state.locks.set(index, false) });
     }
     lock(index) {
-        var tempLocks = this.state.locks.concat();
-        tempLocks[index] = true;
-        this.setState({ locks: tempLocks });
+        this.setState({ locks: this.state.locks.set(index, true) });
     }
-    removeMsg(index) {   
-        var tempQueue = this.state.msgQueue.concat();
-        delete tempQueue[index];
-        this.setState({ msgQueue: tempQueue });
+    removeMsg(index) {
+        this.setState({ msgQueue: this.state.msgQueue.set(index, '') });
     }
     render() {
         var itemList = [];
-        var locks = this.state.locks;
+        var locks = this.state.locks.slice(0);
         this.state.msgQueue.map((msg, i) => {
             if (msg) {
                 if (i > this.renderedIndex) {
-                    for (var j in locks) {
-                        if (!locks[j]) {
-                            locks[j] =true;
+                    for (var j = 0; j < locks.size; j++) {                        
+                        if (!locks.get(j)) {                            
+                            locks = locks.set(j, true);
                             this.renderedIndex = i;
                             itemList.push(<Danmaku msg={msg} removeMsg={this.removeMsg} lock={this.lock} releaseLock={this.releaseLock} lockIndex={j} key={i} index={i } />);
                             break;
@@ -101,7 +95,7 @@ class Danmakus extends React.Component {
                     itemList.push(<Danmaku msg={msg} removeMsg={this.removeMsg} releaseLock={this.releaseLock} key={i} index={i } />);
                 }
             }
-        }, this);
+        });
         return (
                     <div id='example'>
                         { itemList}

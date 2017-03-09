@@ -26781,11 +26781,11 @@ var Danmakus = function (_React$Component3) {
 
         var _this4 = _possibleConstructorReturn(this, (Danmakus.__proto__ || Object.getPrototypeOf(Danmakus)).call(this, props));
 
-        _this4.state = { msgQueue: [], locks: [] };
+        _this4.state = { msgQueue: immutable.List(), locks: immutable.List() };
         _this4.counter = 0;
         _this4.renderedIndex = -1;
         for (var i = 0; i < 5; i++) {
-            _this4.state.locks[i] = false;
+            _this4.state.locks = _this4.state.locks.set(i, false);
         }
         _this4.lock = _this4.lock.bind(_this4);
         _this4.releaseLock = _this4.releaseLock.bind(_this4);
@@ -26800,29 +26800,23 @@ var Danmakus = function (_React$Component3) {
 
             var socket = new WebSocket('ws://127.0.0.1:12000');
             socket.onmessage = function (e) {
-                _this5.setState({ msgQueue: _this5.state.msgQueue.concat(e.data) });
+                _this5.setState({ msgQueue: _this5.state.msgQueue.push(e.data) });
             };
         }
     }, {
         key: 'releaseLock',
         value: function releaseLock(index) {
-            var tempLocks = this.state.locks.concat();
-            tempLocks[index] = false;
-            this.setState({ locks: tempLocks });
+            this.setState({ locks: this.state.locks.set(index, false) });
         }
     }, {
         key: 'lock',
         value: function lock(index) {
-            var tempLocks = this.state.locks.concat();
-            tempLocks[index] = true;
-            this.setState({ locks: tempLocks });
+            this.setState({ locks: this.state.locks.set(index, true) });
         }
     }, {
         key: 'removeMsg',
         value: function removeMsg(index) {
-            var tempQueue = this.state.msgQueue.concat();
-            delete tempQueue[index];
-            this.setState({ msgQueue: tempQueue });
+            this.setState({ msgQueue: this.state.msgQueue.set(index, '') });
         }
     }, {
         key: 'render',
@@ -26830,13 +26824,13 @@ var Danmakus = function (_React$Component3) {
             var _this6 = this;
 
             var itemList = [];
-            var locks = this.state.locks;
+            var locks = this.state.locks.slice(0);
             this.state.msgQueue.map(function (msg, i) {
                 if (msg) {
                     if (i > _this6.renderedIndex) {
-                        for (var j in locks) {
-                            if (!locks[j]) {
-                                locks[j] = true;
+                        for (var j = 0; j < locks.size; j++) {
+                            if (!locks.get(j)) {
+                                locks = locks.set(j, true);
                                 _this6.renderedIndex = i;
                                 itemList.push(React.createElement(Danmaku, { msg: msg, removeMsg: _this6.removeMsg, lock: _this6.lock, releaseLock: _this6.releaseLock, lockIndex: j, key: i, index: i }));
                                 break;
@@ -26846,7 +26840,7 @@ var Danmakus = function (_React$Component3) {
                         itemList.push(React.createElement(Danmaku, { msg: msg, removeMsg: _this6.removeMsg, releaseLock: _this6.releaseLock, key: i, index: i }));
                     }
                 }
-            }, this);
+            });
             return React.createElement(
                 'div',
                 { id: 'example' },
