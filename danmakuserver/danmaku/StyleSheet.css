@@ -13,6 +13,7 @@ pre {
 }
 
 .danmaku {
+    display:inline-block;
     position: absolute;
     white-space: nowrap;
     left: 0%;
@@ -26,7 +27,7 @@ pre {
 
     to {
         left: 0%;
-        transform: translateX(-587px);
+        transform: translateX(-110%);
     }
 }
 

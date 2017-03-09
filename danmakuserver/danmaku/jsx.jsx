@@ -6,6 +6,8 @@ class Danmaku extends React.Component {
         super(props);
         this.duration = 0;
         this.lockIndex = 0;
+        this.duration = (8 * this.getBytesLength((this.props.msg)) * 1.1 + window.innerWidth) / 0.15;
+        this.removetimeout = (8 * this.getBytesLength((this.props.msg)) * 1.05 + window.innerWidth) / 0.15
     }
     shouldComponentUpdate(nextProps, nextState) {
         if (!nextProps.lockIndex && nextProps.msg)
@@ -13,9 +15,6 @@ class Danmaku extends React.Component {
     }
     getBytesLength(str) {
         return str.replace(/[^\x00-\xff]/g, 'xx').length;
-    }
-    componentWillMount() {
-        this.duration = (8 * this.getBytesLength((this.props.msg)) + window.innerWidth) / 0.15;
     }
     componentDidMount() {
         this.lockIndex = this.props.lockIndex;
@@ -54,7 +53,6 @@ class Danmakus extends React.Component {
         super(props);
         this.state = { msgQueue: [], locks: [], }
         this.counter = 0;
-        this.renderFlag = true;
         this.renderedIndex = -1;
         for (var i = 0; i < 5; i++) {
             this.state.locks[i] = false;
@@ -70,13 +68,11 @@ class Danmakus extends React.Component {
         }
     }
     releaseLock(index) {
-        //this.renderFlag = true;
         var tempLocks = this.state.locks.concat();
         tempLocks[index] = false;
         this.setState({ locks: tempLocks });
     }
     lock(index) {
-        //this.renderFlag = false;
         var tempLocks = this.state.locks.concat();
         tempLocks[index] = true;
         this.setState({ locks: tempLocks });

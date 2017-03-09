@@ -26689,6 +26689,8 @@ var Danmaku = function (_React$Component) {
 
         _this.duration = 0;
         _this.lockIndex = 0;
+        _this.duration = (8 * _this.getBytesLength(_this.props.msg) * 1.1 + window.innerWidth) / 0.15;
+        _this.removetimeout = (8 * _this.getBytesLength(_this.props.msg) * 1.05 + window.innerWidth) / 0.15;
         return _this;
     }
 
@@ -26701,11 +26703,6 @@ var Danmaku = function (_React$Component) {
         key: 'getBytesLength',
         value: function getBytesLength(str) {
             return str.replace(/[^\x00-\xff]/g, 'xx').length;
-        }
-    }, {
-        key: 'componentWillMount',
-        value: function componentWillMount() {
-            this.duration = (8 * this.getBytesLength(this.props.msg) + window.innerWidth) / 0.15;
         }
     }, {
         key: 'componentDidMount',
@@ -26786,7 +26783,6 @@ var Danmakus = function (_React$Component3) {
 
         _this4.state = { msgQueue: [], locks: [] };
         _this4.counter = 0;
-        _this4.renderFlag = true;
         _this4.renderedIndex = -1;
         for (var i = 0; i < 5; i++) {
             _this4.state.locks[i] = false;
@@ -26810,7 +26806,6 @@ var Danmakus = function (_React$Component3) {
     }, {
         key: 'releaseLock',
         value: function releaseLock(index) {
-            //this.renderFlag = true;
             var tempLocks = this.state.locks.concat();
             tempLocks[index] = false;
             this.setState({ locks: tempLocks });
@@ -26818,7 +26813,6 @@ var Danmakus = function (_React$Component3) {
     }, {
         key: 'lock',
         value: function lock(index) {
-            //this.renderFlag = false;
             var tempLocks = this.state.locks.concat();
             tempLocks[index] = true;
             this.setState({ locks: tempLocks });
