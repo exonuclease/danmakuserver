@@ -1,38 +1,29 @@
-﻿body {
-    margin: 0;
-}
+body {
+  margin: 0; }
 
 pre {
-    margin: 0;
-}
+  margin: 0; }
 
 #example {
-    position:relative;
-    height: 300px;
-    overflow: hidden;
-}
+  position: relative;
+  height: 300px;
+  overflow: hidden; }
 
 .danmaku {
-    display:inline-block;
-    position: absolute;
-    white-space: nowrap;
-    left: 0%;
-}
+  display: inline-block;
+  position: absolute;
+  white-space: nowrap;
+  left: 0%;
+  will-change: transform; }
 
 @keyframes move {
-    from {
-        left: 100%;
-        transform: translateX(0);
-    }
-
-    to {
-        left: 0%;
-        transform: translateX(-110%);
-    }
-}
-
+  from {
+    transform: translateX(1920px); }
+  to {
+    transform: translateX(-110%); } }
 .senddanmaku {
-    position: absolute;
-    left:0;
-    bottom: 0;
-}
+  position: absolute;
+  left: 0;
+  bottom: 0; }
+
+/*# sourceMappingURL=StyleSheet.css.map */

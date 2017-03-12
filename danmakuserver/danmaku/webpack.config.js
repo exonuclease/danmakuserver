@@ -13,6 +13,10 @@
               query: {
                   presets: ['es2015', 'react','stage-3']
               }
+          },
+          {
+              test: /\.scss$/,
+              loader: 'style!css!sass'
           }
         ]
     },

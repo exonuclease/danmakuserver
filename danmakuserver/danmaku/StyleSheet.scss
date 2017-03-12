@@ -1,0 +1,37 @@
+﻿body {
+    margin: 0;
+}
+
+pre {
+    margin: 0;
+}
+
+#example {
+    position:relative;
+    height: 300px;
+    overflow: hidden;
+}
+
+.danmaku {
+    display:inline-block;
+    position: absolute;
+    white-space: nowrap;
+    left: 0%;
+    will-change:transform;
+}
+
+@keyframes move {
+    from {
+        transform: translateX(1920px)//更改为弹幕区域的宽度;
+    }
+
+    to {
+        transform: translateX(-110%);
+    }
+}
+
+.senddanmaku {
+    position: absolute;
+    left:0;
+    bottom: 0;
+}
