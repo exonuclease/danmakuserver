@@ -4,6 +4,8 @@ var immutable = require('immutable');
 var Danmaku = require('./Danmakus.jsx');
 var Danmakus = require('./Danmakus.jsx');
 ReactDOM.render(
-    <div className='example'>
-    <Danmakus />
-    </div>, document.getElementById('example1'))
+    <div className="example">
+        <Danmakus />
+    </div>,
+    document.getElementById('example1')
+);

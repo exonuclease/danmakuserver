@@ -6,19 +6,18 @@ if (cluster.isMaster) {
         worker = cluster.fork();
         workers[worker.pid] = worker;
     }
-    cluster.on('death', function (worker) {
+    cluster.on('death', function(worker) {
         delete workers[worker.pid];
         worker = cluster.fork();
         workers[worker.pid] = worker;
-    })
+    });
     for (var vorker of workers.values()) {
-        workers.on('message', function (msg) {
+        workers.on('message', function(msg) {
             for (var worker of workers.values()) {
                 worker.send({ content: msg.content });
             }
-        })
+        });
     }
-}
-else if (cluster.isWorker) {
+} else if (cluster.isWorker) {
     require('worker.js');
 }
