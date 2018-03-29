@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@types/node": "8.10",
+    "@types/ws": "^4.0.2"
+  }
+}
