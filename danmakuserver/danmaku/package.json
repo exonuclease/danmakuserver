@@ -19,6 +19,7 @@
     "install": "^0.11.0",
     "sass-loader": "^6.0.3",
     "source-map-loader": "^0.2.3",
+    "typescript": "^2.8.4",
     "webpack": "^4.3.0"
   }
 }

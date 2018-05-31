@@ -13,12 +13,13 @@ export default class Danmakus extends React.PureComponent<{}, DanmakusState> {
   private socket: WebSocket;
   constructor(props) {
     super(props);
-    this.state = { msgQueue: immutable.List(), locks: immutable.List() };
+    let locks: immutable.List<boolean> = immutable.List();
+    for (let i = 0; i < 5; i++) {
+      locks = locks.set(i, false);
+    }
+    this.state = { msgQueue: immutable.List(), locks };
     this.counter = 0;
     this.renderedIndex = -1;
-    for (let i = 0; i < 5; i++) {
-      this.state.locks = this.state.locks.set(i, false);
-    }
     this.lock = this.lock.bind(this);
     this.releaseLock = this.releaseLock.bind(this);
     this.removeMsg = this.removeMsg.bind(this);
@@ -40,7 +41,7 @@ export default class Danmakus extends React.PureComponent<{}, DanmakusState> {
   }
   render() {
     const itemList = [];
-    let locks = this.state.locks.slice(0);
+    let locks = this.state.locks;
     this.state.msgQueue.map((msg, i) => {
       if (msg) {
         if (i > this.renderedIndex) {

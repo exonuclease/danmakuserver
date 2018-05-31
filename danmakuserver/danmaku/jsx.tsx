@@ -1,10 +1,10 @@
 ﻿import * as React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom';
 import Danmakus from './Danmakus';
 
 ReactDOM.render(
   <div className="example">
-    <Danmakus compiler="TypeScript" framework="React" />
+    <Danmakus />
   </div>,
   document.getElementById('example1')
 );

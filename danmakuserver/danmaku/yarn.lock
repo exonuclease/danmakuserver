@@ -3579,6 +3579,10 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "http://registry.npm.taobao.org/typedarray/download/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
+typescript@^2.8.4:
+  version "2.8.4"
+  resolved "http://registry.m.jd.com/typescript/download/typescript-2.8.4.tgz#0b1db68e6bdfb0b767fa2ab642136a35b059b199"
+
 ua-parser-js@^0.7.9:
   version "0.7.17"
   resolved "http://registry.npm.taobao.org/ua-parser-js/download/ua-parser-js-0.7.17.tgz#e9ec5f9498b9ec910e7ae3ac626a805c4d09ecac"
